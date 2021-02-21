@@ -1,3 +1,3 @@
-# flask_template
+# fictional-octo-umbrella
 
-Simple Template to set up a Flask app
+Platform to help with generating code for deployment of Data Science and ML models 
