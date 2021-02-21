@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Home - Brand</title>
+    <title>Create Application</title>
     <link rel="stylesheet" href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
@@ -22,11 +22,18 @@
             </div>
         </div>
     </nav>
-    <main class="page landing-page">
-        <section class="clean-block clean-hero" style="background-image:url(&quot;{{url_for('static', filename='img/tech/image4.jpg')}}&quot;);color:rgba(9, 162, 255, 0.85);">
-            <div class="text">
-                <h2>Lorem ipsum dolor sit amet.</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p><a class="btn btn-outline-light btn-lg" role="button" href="{{url_for('create')}}">Create App</a>
+    <main class="page contact-us-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">Create Application</h2>
+                    <p>Upload your dataset (CSV) and what you want done on the dataset</p>
+                </div>
+                <form>
+                    <div class="mb-3"><label class="form-label" for="name">File</label><input class="form-control" type="file" accept=".csv" id="name" name="name"></div>
+                    <div class="mb-3"><label class="form-label" for="message">Requirements</label></div>
+                    <div class="mb-3"><textarea class="form-control" id="message" name="message"></textarea><br><br><button class="btn btn-primary" type="submit">Create</button></div>
+                </form>
             </div>
         </section>
     </main>
