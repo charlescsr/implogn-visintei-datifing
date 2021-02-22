@@ -1,11 +1,11 @@
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, request
 import os
 from pathlib import Path
 import shutil
 
 app = Flask(__name__)
 
-main = ""
+main = "/home/codespace/workspace/fictional-octo-umbrella/"
 
 app_file = """ 
 from flask import Flask #Anything else from flask can be added here
@@ -53,6 +53,14 @@ def generate():
     f_name = Path('application.zip')
 
     return send_file(f_name, attachment_filename='application.zip', as_attachment=True)
+
+@app.after_request
+def delete_zip(response):
+    if request.endpoint=="generate": 
+        os.remove('application.zip')
+    
+    return response
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
