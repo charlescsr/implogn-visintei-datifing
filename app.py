@@ -5,12 +5,7 @@ from pathlib import Path
 import shutil
 
 app = Flask(__name__)
-
-try:
-    main = os.environ['LOCAL_PATH']
-
-except Exception:
-    main = os.environ['CS_PATH']
+main = os.environ['CS_PATH']
 
 app_file = """ 
 from flask import Flask
