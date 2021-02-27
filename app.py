@@ -8,7 +8,7 @@ app = Flask(__name__)
 main = "/home/codespace/workspace/fictional-octo-umbrella/"
 
 app_file = """ 
-from flask import Flask #Anything else from flask can be added here
+from flask import Flask
 
 app = Flask(__name__)
 
@@ -24,11 +24,6 @@ directory = "test_app"
 
 path = os.path.join(main, directory)
 
-def zipdir(path, ziph):
-    # ziph is zipfile handle
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            ziph.write(os.path.join(root, file), os.path.relpath(os.path.join(root, file), os.path.join(path, '..')))
 
 def generate_code():
     os.mkdir(path)
