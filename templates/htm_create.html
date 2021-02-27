@@ -26,13 +26,14 @@
         <section class="clean-block clean-form dark">
             <div class="container">
                 <div class="block-heading">
-                    <h2 class="text-info">Create Application</h2>
-                    <p>Upload your dataset (CSV) and what you want done on the dataset</p>
+                    <h2 class="text-info">Create Endpoints</h2>
+                    <p>What endpoints would you like to have in the application?</p>
                 </div>
-                <form action="{{url_for('generate')}}" method="POST", enctype="multipart/form-data">
-                    <div class="mb-3"><label class="form-label" for="name">File</label><input class="form-control" type="file" accept=".csv" id="dataset" name="dataset"></div>
-                    <div class="mb-3"><label class="form-label" for="reqs">Requirements</label></div>
-                    <div class="mb-3"><textarea class="form-control" id="reqs" name="reqs"></textarea><br><br><button class="btn btn-primary" type="submit">Create</button></div>
+                <form class="form-end" action="{{url_for('create')}}" method="POST", enctype="multipart/form-data">
+                    <div class="mb-3"><label class="form-label" for="name">Endpoint Name</label><input class="form-control" type="text" placeholder="Enter Name of endpoint" id="name" name="name"></div>
+                    <div class="mb-3"><label class="form-label" for="type">Endpoint Type</label><select class="form-control" placeholder="Enter Type of endpoint" id="type" name="type"></div>
+                    <div class="mb-3"><label class="form-label" for="type">Endpoint Title</label><select class="form-control" placeholder="Enter Type of endpoint" id="type" name="type"></div>
+                    <div class="mb-3"><button type="button" class="add-field">+</button></div>   
                 </form>
             </div>
         </section>
@@ -42,6 +43,19 @@
             <p>© 2021 CSR</p>
         </div>
     </footer>
+    <script>
+        $(document).ready(function(){
+            $( ".add-field" ).click(function(){
+                var $clone = $( "form-end" ).first().clone();
+                $clone.append( "<button type='button' class='remove-field'>-</button>" );
+                $clone.insertBefore( ".add-field" );
+            });
+            
+            $( ".form-style-9" ).on("click", ".remove-field", function(){
+                $(this).parent().remove();
+            });
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
     <script src="{{url_for('static', filename='js/script.min.js')}}"></script>
