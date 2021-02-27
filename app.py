@@ -6,7 +6,11 @@ import shutil
 
 app = Flask(__name__)
 
-main = "/home/charlescsr/Documents/tact/fictional-octo-umbrella/"
+try:
+    main = os.environ['LOCAL_PATH']
+
+except Exception:
+    main = os.environ['CS_PATH']
 
 app_file = """ 
 from flask import Flask
