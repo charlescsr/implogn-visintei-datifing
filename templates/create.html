@@ -31,7 +31,16 @@
                 </div>
                 <form action="{{url_for('generate')}}" method="POST", enctype="multipart/form-data">
                     <div class="mb-3"><label class="form-label" for="name">File</label><input class="form-control" type="file" accept=".csv" id="dataset" name="dataset"></div>
-                    <div class="mb-3"><label class="form-label" for="reqs">Requirements</label></div>
+                    <div class="mb-3"><label class="form-label" for="reqs">Model</label></div>
+                    <div class="mb-3"><select class="form-control" name="model" required>
+                        <option value=""></option>
+                        <option value="lr">Linear Regression</option>
+                        <option value="lor">Logistic Regression</option>
+                        <option value="nb">Naive Bayes</option>
+                        <option value="knn">K Nearest Neighbors Classification</option>
+                        <option value="dtc ">Decision Tree Classification</option>
+                        <option value="rfc">Random Foreset Classification</option>>
+                        </select>
                     <div class="mb-3"><textarea class="form-control" id="reqs" name="reqs"></textarea><br><br><button class="btn btn-primary" type="submit">Create</button></div>
                 </form>
             </div>
