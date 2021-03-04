@@ -91,6 +91,7 @@ def generate_code():
     data = file.filename
     shutil.move(data, static_path)
     f = open(os.path.join(path, 'app.py'), 'w')
+    app_file = app_start + "/n" + app_routes + app_launch
     f.write(app_file)
     f.close()
 
