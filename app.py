@@ -56,25 +56,6 @@ base_html = """
 </html>
 """
 
-html_start = """
-{% extends "base.html" %}
-"""
-
-html_title = """
-{% block title %}
-
-"""
-
-end_block = """
-{% endblock %}
-
-"""
-
-html_content = """
-{% block content %}
-
-
-"""
 
 directory = "test_app"
 template_dir = "test_app/templates"
