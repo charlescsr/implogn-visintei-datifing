@@ -8,7 +8,7 @@ import requests
 app = Flask(__name__)
 main = os.environ['MAIN_PATH']
 
-app_file = """ 
+app_start = """ 
 from flask import Flask, render_template, request
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.naive_bayes import GaussianNB
@@ -20,13 +20,21 @@ import pickle
 app = Flask(__name__)
 pkl_model = open('model.pkl', 'rb')
 model = pickle.load(pkl_model)
+"""
+
+app_routes = """
 
 @app.route('/')
 def index():
     return "Hello World"
 
+"""
+
+app_launch = """
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
+
 """
 
 base_html = """
@@ -46,6 +54,26 @@ base_html = """
 </body>
 
 </html>
+"""
+
+html_start = """
+{% extends "base.html" %}
+"""
+
+html_title = """
+{% block title %}
+
+"""
+
+end_block = """
+{% endblock %}
+
+"""
+
+html_content = """
+{% block content %}
+
+
 """
 
 directory = "test_app"
