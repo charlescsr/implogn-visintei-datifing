@@ -6,12 +6,20 @@ import shutil
 import requests
 
 app = Flask(__name__)
-main = os.environ['CS_PATH']
+main = os.environ['MAIN_PATH']
 
 app_file = """ 
-from flask import Flask
+from flask import Flask, render_template, request
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+import pickle
 
 app = Flask(__name__)
+pkl_model = open('model.pkl', 'rb')
+model = pickle.load(pkl_model)
 
 @app.route('/')
 def index():
@@ -51,10 +59,7 @@ static_path = os.path.join(main, static_dir)
 
 def generate_code():
     file = request.files['dataset']
-    file.save(secure_filename(file.filename))
-    os.mkdir(path)
-    os.mkdir(template_path)
-    os.mkdir(static_path)
+    #file.save(secure_filename(file.filename))
     data = file.filename
     shutil.move(data, static_path)
     f = open(os.path.join(path, 'app.py'), 'w')
@@ -76,20 +81,39 @@ def htm_create():
 
 @app.route('/generate', methods=["POST"])
 def generate():
+    os.mkdir(path)
+    os.mkdir(template_path)
+    os.mkdir(static_path)
+    m = request.form['model']
+    site = "http://127.0.0.1:8000/model_set/"
+    file = request.files['dataset']
+    file.save(secure_filename(file.filename))
+    dataset = {"data": open(file.filename, "rb")}
+    r = requests.post(site + m, files=dataset)
+    if r.status_code == 200:
+        with open('model.pkl', 'wb') as f:
+            f.write(r.content)
+        shutil.move('model.pkl', path)
+    else:
+        return "Error"
+
+    f = open(os.path.join(template_path, 'base.html'), 'w')
+    f.write(base_html)
+    f.close()
     generate_code()
     shutil.make_archive('application', 'zip', 'test_app')
     shutil.rmtree(path)
     f_name = Path('application.zip')
 
     return send_file(f_name, attachment_filename='application.zip', as_attachment=True)
-
+'''
 @app.after_request
 def delete_zip(response):
     if request.endpoint=="generate": 
         os.remove('application.zip')
     
     return response
-
+'''
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
