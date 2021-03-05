@@ -110,6 +110,8 @@ def generate_code():
     app_file = app_start + "\n" + app_routes + app_launch
     f.write(app_file)
     f.close()
+    shutil.copyfile('Pipfile', os.path.join(path+"/Pipfile"))
+    shutil.copyfile('Pipfile.lock', os.path.join(path+"/Pipfile.lock"))
 
 
 @app.route('/')
