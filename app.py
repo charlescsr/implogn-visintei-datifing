@@ -2,6 +2,7 @@ from flask import Flask, render_template, send_file, request
 from werkzeug.utils import secure_filename
 import os
 from pathlib import Path
+import zipfile
 import shutil
 import requests
 
@@ -15,9 +16,12 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 import pickle
+import pandas as pd
 
 app = Flask(__name__)
+df = pd.read_csv('static/data.csv', index_col=0)
 pkl_model = open('model.pkl', 'rb')
 model = pickle.load(pkl_model)
 """
@@ -26,7 +30,28 @@ app_routes = """
 
 @app.route('/')
 def index():
-    return "Hello World"
+    return render_template('index.html')
+
+@app.route('/make_predict')
+def make_predict():
+    return render_template('make_predict.html')
+
+@app.route('/predict_ans', methods=['POST'])
+def predict_ans():
+    feats = []
+    for val in request.values:
+        feats.append(val)
+
+    if model == 'LinearRegression':
+        ans = model.predict(feats)
+        acc = model.score(feats, ans)
+        return render_template('predict_ans.html', answer=ans, accuracy=acc)
+
+    else:
+        ans = model.predict(feats)
+        acc = accuracy_score(feats, ans)
+        return render_template('predict_ans.html', answer=ans, accuracy=acc)
+
 
 """
 
@@ -67,12 +92,22 @@ static_path = os.path.join(main, static_dir)
 
 
 def generate_code():
-    file = request.files['dataset']
-    #file.save(secure_filename(file.filename))
-    data = file.filename
+    data = "data.csv"
+    site = "http://127.0.0.1:8000/create_html/"
+    dataset = {"data": open("data.csv", "rb")}
+    r = requests.post(site, files=dataset)
+    if r.status_code == 200:
+        with open('templates.zip', 'wb') as f:
+            f.write(r.content)
+        
+        with zipfile.ZipFile('templates.zip', 'r') as zip_ref:
+            zip_ref.extractall(template_path)
+        os.remove('templates.zip')
+    else:
+        return "Error"
     shutil.move(data, static_path)
     f = open(os.path.join(path, 'app.py'), 'w')
-    app_file = app_start + "/n" + app_routes + app_launch
+    app_file = app_start + "\n" + app_routes + app_launch
     f.write(app_file)
     f.close()
 
@@ -97,8 +132,8 @@ def generate():
     m = request.form['model']
     site = "http://127.0.0.1:8000/model_set/"
     file = request.files['dataset']
-    file.save(secure_filename(file.filename))
-    dataset = {"data": open(file.filename, "rb")}
+    file.save(secure_filename("data.csv"))
+    dataset = {"data": open("data.csv", "rb")}
     r = requests.post(site + m, files=dataset)
     if r.status_code == 200:
         with open('model.pkl', 'wb') as f:
