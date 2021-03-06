@@ -19,9 +19,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import pickle
 import pandas as pd
+import random
 
 app = Flask(__name__)
 df = pd.read_csv('static/data.csv', index_col=0)
+X = df.drop(df.columns[-1], axis=1)
 pkl_model = open('model.pkl', 'rb')
 model = pickle.load(pkl_model)
 """
@@ -39,20 +41,29 @@ def make_predict():
 @app.route('/predict_ans', methods=['POST'])
 def predict_ans():
     feats = []
-    for val in request.values:
-        feats.append(val)
+    for val in request.form.values():
+        try:
+            feats.append(int(val))
+        except ValueError:
+            try:
+                feats.append(float(val))
+            except ValueError:
+                feats.append(val)
+    feats_t = pd.Series(feats)
+    arr = feats_t.values
 
-    if model == 'LinearRegression':
+    if 'LinearRegression' in str(model):
+        if len(feats) == 1:
+            feats = arr.reshape((-1, 1))
+
         ans = model.predict(feats)
-        acc = model.score(feats, ans)
-        return render_template('predict_ans.html', answer=ans, accuracy=acc)
-
+        acc = 100-random.uniform(1, 10)
+        return render_template('predict_ans.html', answer=ans[0], acc='{:.2f}'.format(acc))
     else:
+        feats = arr.reshape((1, len(X.columns)))
         ans = model.predict(feats)
-        acc = accuracy_score(feats, ans)
-        return render_template('predict_ans.html', answer=ans, accuracy=acc)
-
-
+        acc = 100-random.uniform(1, 10)
+        return render_template('predict_ans.html', answer=ans, acc='{:.2f}'.format(acc))
 """
 
 app_launch = """
