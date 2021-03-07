@@ -1,6 +1,6 @@
 # Implögn Vísinței Dating
 
-[![CircleCI](https://circleci.com/gh/charlescsr/implogn-visintei-dating.svg?style=svg)](https://circleci.com/gh/charlescsr/implogn-visintei-dating) 
+[![CircleCI](https://circleci.com/gh/charlescsr/implogn-visintei-dating.svg?style=svg)](https://circleci.com/gh/charlescsr/implogn-visintei-dating) [![AGPL-3.0 License](https://img.shields.io/badge/license-AGPL-green.svg?style=flat)](LICENSE)
 
 Platform to help with generating code for deployment of Data Science and ML models 
 
