@@ -104,7 +104,7 @@ static_path = os.path.join(main, static_dir)
 
 def generate_code():
     data = "data.csv"
-    site = "http://127.0.0.1:8000/create_html/"
+    site = "https://model-html-generator.herokuapp.com/create_html/"
     dataset = {"data": open("data.csv", "rb")}
     r = requests.post(site, files=dataset)
     if r.status_code == 200:
@@ -143,7 +143,7 @@ def generate():
     os.mkdir(template_path)
     os.mkdir(static_path)
     m = request.form['model']
-    site = "http://127.0.0.1:8000/model_set/"
+    site = "https://model-html-generator.herokuapp.com/model_set/"
     file = request.files['dataset']
     file.save(secure_filename("data.csv"))
     dataset = {"data": open("data.csv", "rb")}
