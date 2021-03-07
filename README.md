@@ -1,5 +1,7 @@
 # Implögn Vísinței Dating
 
+[![CircleCI](https://circleci.com/gh/charlescsr/implogn-visintei-dating.svg?style=svg)](https://circleci.com/gh/charlescsr/implogn-visintei-dating) 
+
 Platform to help with generating code for deployment of Data Science and ML models 
 
 This is a Flask web app used to generate deployable code based around and ML model.
