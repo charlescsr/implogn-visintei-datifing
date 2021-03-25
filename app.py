@@ -69,7 +69,7 @@ def predict_ans():
 app_launch = """
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run()
 
 """
 
@@ -123,6 +123,7 @@ def generate_code():
     f.close()
     shutil.copyfile('Pipfile', os.path.join(path+"/Pipfile"))
     shutil.copyfile('Pipfile.lock', os.path.join(path+"/Pipfile.lock"))
+    shutil.copyfile('Procfile', os.path.join(path+"/Procfile"))
 
 
 @app.route('/')
