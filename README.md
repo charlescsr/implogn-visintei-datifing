@@ -4,7 +4,7 @@
 
 Platform to help with generating code for deployment of Data Science and ML models 
 
-This is a Flask web app used to generate deployable code based around and ML model.
+This is a Flask web app used to generate deployable code based around the ML model and dataset uploaded by the user.
 
 ## Procedure:
 
