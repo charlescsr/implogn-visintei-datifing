@@ -6,6 +6,8 @@ Platform to help with generating code for deployment of Data Science and ML mode
 
 This is a Flask web app used to generate deployable code based around the ML model and dataset uploaded by the user.
 
+Simply put, this is a Flask application that utlises FastAPI to create a Flask application
+
 ## Procedure:
 
 * The user uploads the dataset
