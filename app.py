@@ -77,7 +77,7 @@ base_html = """
     <title>{% block title %}<!-- Placeholder for Title -->{% endblock %}</title>
 </head>
 
-<body>    
+<body style="background-color:black">    
     {% block content %}
     <!-- Placeholder for Page Content -->
     {% endblock %}
