@@ -11,12 +11,6 @@ main = os.environ['MAIN_PATH']
 
 app_start = """ 
 from flask import Flask, render_template, request
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 import pickle
 import pandas as pd
 import random
