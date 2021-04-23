@@ -57,7 +57,7 @@ def predict_ans():
         feats = arr.reshape((1, len(X.columns)))
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
-        return render_template('predict_ans.html', answer=ans, acc='{:.2f}'.format(acc))
+        return render_template('predict_ans.html', answer=ans[0], acc='{:.2f}'.format(acc))
 """
 
 app_launch = """
