@@ -48,7 +48,10 @@ def predict_ans():
 
     if 'LinearRegression' in str(model):
         if len(feats) == 1:
-            feats = arr.reshape((-1, 1))
+            feats = arr.reshape(-1, 1)
+
+        else:
+            feats = arr.reshape(1, -1)
 
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
