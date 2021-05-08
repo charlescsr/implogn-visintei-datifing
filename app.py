@@ -148,6 +148,8 @@ def create():
 
 @app.route('/generate', methods=["POST"])
 def generate():
+    remove_existing_dir(directory)
+
     os.mkdir(path)
     os.mkdir(template_path)
     os.mkdir(static_path)
