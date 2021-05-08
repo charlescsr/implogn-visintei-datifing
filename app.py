@@ -109,7 +109,10 @@ def remove_existing_dir(folder):
 
         print(subprocess.run(f'sudo rm -rf {remove_path+folder}', shell=True))
 
-        print("Deleted file successfully")
+        print("Deleted dir successfully")
+    
+    else:
+        print("Task Failed Successfully")
 
 def generate_code():
     data = "data.csv"
