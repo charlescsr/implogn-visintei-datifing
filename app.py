@@ -5,6 +5,7 @@ from pathlib import Path
 import zipfile
 import shutil
 import requests
+import subprocess
 
 app = Flask(__name__)
 main = os.environ['MAIN_PATH']
@@ -98,6 +99,17 @@ path = os.path.join(main, directory)
 template_path = os.path.join(main, template_dir)
 static_path = os.path.join(main, static_dir)
 
+def remove_existing_dir(folder):
+
+    remove_path = main 
+
+    if os.path.exists(remove_path+folder):
+
+        print ("moved to that location")
+
+        print(subprocess.run(f'sudo rm -rf {remove_path+folder}', shell=True))
+
+        print("Deleted file successfully")
 
 def generate_code():
     data = "data.csv"
@@ -130,10 +142,6 @@ def index():
 @app.route('/create')
 def create():
     return render_template("create.html")
-
-@app.route('/htm_create')
-def htm_create():
-    return render_template("htm_create.html")
 
 @app.route('/generate', methods=["POST"])
 def generate():
