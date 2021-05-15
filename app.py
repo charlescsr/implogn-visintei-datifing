@@ -9,11 +9,6 @@ import requests
 app = Flask(__name__)
 main = os.environ.get('MAIN_PATH')
 TOKEN = os.environ.get('TOKEN')
-ICON = os.environ.get('ICON')
-FONT = os.environ.get('FONT')
-CSS_ICON_1 = os.environ.get('CSS_ICON_1')
-CSS_ICON_2 = os.environ.get('CSS_ICON_2')
-CSS_FILE = os.environ.get('CSS_FILE')
 
 
 app_start = """ 
@@ -33,14 +28,10 @@ app_routes = """
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('predict.html')
 
-@app.route('/make_predict')
-def make_predict():
-    return render_template('make_predict.html')
-
-@app.route('/predict_ans', methods=['POST'])
-def predict_ans():
+@app.route('/result', methods=['POST'])
+def result():
     feats = []
     for val in request.form.values():
         try:
@@ -62,12 +53,12 @@ def predict_ans():
 
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
-        return render_template('predict_ans.html', answer=ans[0], acc='{:.2f}'.format(acc))
+        return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
     else:
         feats = arr.reshape((1, len(X.columns)))
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
-        return render_template('predict_ans.html', answer=ans[0], acc='{:.2f}'.format(acc))
+        return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
 """
 
 app_launch = """
