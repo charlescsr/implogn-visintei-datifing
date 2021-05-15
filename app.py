@@ -5,7 +5,6 @@ from pathlib import Path
 import zipfile
 import shutil
 import requests
-import subprocess
 
 app = Flask(__name__)
 main = os.environ.get('MAIN_PATH')
@@ -85,14 +84,11 @@ base_html = """
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {}
-
-    {}
-
-    {}
-    {}
-
-    {}
+    <link href="{{ url_for('static', filename='img/brand/logo.png') }}" rel="icon" type="image/png">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link href="{{ url_for('static', filename='js/plugins/nucleo/css/nucleo.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='js/plugins/@fortawesome/fontawesome-free/css/all.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/argon-dashboard.css') }}" rel="stylesheet" />
     <title>{% block title %}<!-- Placeholder for Title -->{% endblock %}</title>
 </head>
 <body>    
@@ -103,7 +99,7 @@ base_html = """
 </html>
 """
 
-base_html = base_html.format(ICON, FONT, CSS_ICON_1, CSS_ICON_2, CSS_FILE)
+#base_html = base_html.format(ICON, FONT, CSS_ICON_1, CSS_ICON_2, CSS_FILE)
 
 directory = "test_app"
 template_dir = "test_app/templates"
@@ -113,24 +109,9 @@ path = os.path.join(main, directory)
 template_path = os.path.join(main, template_dir)
 static_path = os.path.join(main, static_dir)
 
-def remove_existing_dir(folder):
-
-    remove_path = main 
-
-    if os.path.exists(remove_path+folder):
-
-        print ("moved to that location")
-
-        print(subprocess.run(f'sudo rm -rf {remove_path+folder}', shell=True))
-
-        print("Deleted dir successfully")
-    
-    else:
-        print("Task Failed Successfully")
-
 def generate_code():
     data = "data.csv"
-    site = "http://127.0.0.1:8000/create_html_nuvo/"
+    site = "https://model-html-generator.herokuapp.com/create_html_nuvo/"
     dataset = {"data": open("data.csv", "rb")}
     r = requests.post(site, files=dataset)
     if r.status_code == 200:
@@ -145,7 +126,7 @@ def generate_code():
     
     shutil.move(data, static_path)
 
-    site = "http://127.0.0.1:8000/get-static/"+str(TOKEN)
+    site = "https://model-html-generator.herokuapp.com/get-static/"+str(TOKEN)
     r = requests.post(site)
     if r.status_code == 200:
         with open("static.zip", 'wb') as f:
@@ -157,7 +138,7 @@ def generate_code():
         os.remove('static.zip')        
 
     f = open(os.path.join(path, 'app.py'), 'w')
-    app_file = app_start + "\n" + app_routes + app_launch
+    app_file = app_start + "\n" + app_routes + "\n" + app_launch
     f.write(app_file)
     f.close()
     shutil.copyfile('Pipfile', os.path.join(path+"/Pipfile"))
@@ -175,8 +156,6 @@ def create():
 
 @app.route('/generate', methods=["POST"])
 def generate():
-    remove_existing_dir(directory)
-
     os.mkdir(path)
     os.mkdir(template_path)
     os.mkdir(static_path)
@@ -184,7 +163,7 @@ def generate():
         os.remove("application.zip")
 
     m = request.form['model']
-    site = "http://127.0.0.1:8000/model_set/"
+    site = "https://model-html-generator.herokuapp.com/model_set/"
     file = request.files['dataset']
     file.save(secure_filename("data.csv"))
     dataset = {"data": open("data.csv", "rb")}
