@@ -7,7 +7,9 @@ import shutil
 import requests
 
 app = Flask(__name__)
-main = os.environ['MAIN_PATH']
+main = os.environ.get('MAIN_PATH')
+TOKEN = os.environ.get('TOKEN')
+
 
 app_start = """ 
 from flask import Flask, render_template, request
@@ -26,14 +28,10 @@ app_routes = """
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('predict.html')
 
-@app.route('/make_predict')
-def make_predict():
-    return render_template('make_predict.html')
-
-@app.route('/predict_ans', methods=['POST'])
-def predict_ans():
+@app.route('/result', methods=['POST'])
+def result():
     feats = []
     for val in request.form.values():
         try:
@@ -55,12 +53,12 @@ def predict_ans():
 
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
-        return render_template('predict_ans.html', answer=ans[0], acc='{:.2f}'.format(acc))
+        return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
     else:
         feats = arr.reshape((1, len(X.columns)))
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
-        return render_template('predict_ans.html', answer=ans[0], acc='{:.2f}'.format(acc))
+        return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
 """
 
 app_launch = """
@@ -73,22 +71,26 @@ if __name__ == '__main__':
 base_html = """
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='img/brand/logo.png') }}" rel="icon" type="image/png">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link href="{{ url_for('static', filename='js/plugins/nucleo/css/nucleo.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='js/plugins/@fortawesome/fontawesome-free/css/all.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/argon-dashboard.css') }}" rel="stylesheet" />
     <title>{% block title %}<!-- Placeholder for Title -->{% endblock %}</title>
 </head>
-
-<body style="background-color:black">    
+<body>    
     {% block content %}
     <!-- Placeholder for Page Content -->
     {% endblock %}
 </body>
-
 </html>
 """
 
+#base_html = base_html.format(ICON, FONT, CSS_ICON_1, CSS_ICON_2, CSS_FILE)
 
 directory = "test_app"
 template_dir = "test_app/templates"
@@ -98,10 +100,9 @@ path = os.path.join(main, directory)
 template_path = os.path.join(main, template_dir)
 static_path = os.path.join(main, static_dir)
 
-
 def generate_code():
     data = "data.csv"
-    site = "https://model-html-generator.herokuapp.com/create_html/"
+    site = "https://model-html-generator.herokuapp.com/create_html_nuvo/"
     dataset = {"data": open("data.csv", "rb")}
     r = requests.post(site, files=dataset)
     if r.status_code == 200:
@@ -113,14 +114,27 @@ def generate_code():
         os.remove('templates.zip')
     else:
         return "Error"
+    
     shutil.move(data, static_path)
+
+    site = "https://model-html-generator.herokuapp.com/get-static/"+str(TOKEN)
+    r = requests.post(site)
+    if r.status_code == 200:
+        with open("static.zip", 'wb') as f:
+            f.write(r.content)
+
+        with zipfile.ZipFile('static.zip', 'r') as zip_ref:
+            zip_ref.extractall(static_path)
+        
+        os.remove('static.zip')        
+
     f = open(os.path.join(path, 'app.py'), 'w')
-    app_file = app_start + "\n" + app_routes + app_launch
+    app_file = app_start + "\n" + app_routes + "\n" + app_launch
     f.write(app_file)
     f.close()
     shutil.copyfile('Pipfile', os.path.join(path+"/Pipfile"))
     shutil.copyfile('Pipfile.lock', os.path.join(path+"/Pipfile.lock"))
-    shutil.copyfile('Procfile', os.path.join(path+"/Procfile"))
+    #shutil.copyfile('Procfile', os.path.join(path+"/Procfile"))
 
 
 @app.route('/')
@@ -131,15 +145,14 @@ def index():
 def create():
     return render_template("create.html")
 
-@app.route('/htm_create')
-def htm_create():
-    return render_template("htm_create.html")
-
 @app.route('/generate', methods=["POST"])
 def generate():
     os.mkdir(path)
     os.mkdir(template_path)
     os.mkdir(static_path)
+    if os.path.exists("application.zip"):
+        os.remove("application.zip")
+
     m = request.form['model']
     site = "https://model-html-generator.herokuapp.com/model_set/"
     file = request.files['dataset']
@@ -162,14 +175,6 @@ def generate():
     f_name = Path('application.zip')
 
     return send_file(f_name, attachment_filename='application.zip', as_attachment=True)
-'''
-@app.after_request
-def delete_zip(response):
-    if request.endpoint=="generate": 
-        os.remove('application.zip')
-    
-    return response
-'''
 
 if __name__ == '__main__':
     app.run()
