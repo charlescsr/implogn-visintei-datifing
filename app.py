@@ -154,7 +154,7 @@ def generate():
         os.remove("application.zip")
 
     m = request.form['model']
-    site = "https://model-html-generator.herokuapp.com/model_set/"
+    site = "http://127.0.0.1:8000/model_set/"
     file = request.files['dataset']
     file.save(secure_filename("data.csv"))
     dataset = {"data": open("data.csv", "rb")}
@@ -174,7 +174,7 @@ def generate():
     shutil.rmtree(path)
     f_name = Path('application.zip')
 
-    return send_file(f_name, attachment_filename='application.zip', as_attachment=True)
+    return send_file(f_name, download_name='application.zip', as_attachment=True)
 
 if __name__ == '__main__':
     app.run()
