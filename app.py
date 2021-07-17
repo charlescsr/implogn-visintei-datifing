@@ -154,7 +154,7 @@ def generate():
         os.remove("application.zip")
 
     m = request.form['model']
-    site = "http://127.0.0.1:8000/model_set/"
+    site = "https://model-html-generator.herokuapp.com/model_set/"
     file = request.files['dataset']
     file.save(secure_filename("data.csv"))
     dataset = {"data": open("data.csv", "rb")}
