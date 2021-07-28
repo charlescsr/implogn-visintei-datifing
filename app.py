@@ -147,9 +147,19 @@ def create():
 
 @app.route('/generate', methods=["POST"])
 def generate():
-    os.mkdir(path)
-    os.mkdir(template_path)
-    os.mkdir(static_path)
+    try:
+        os.mkdir(path)
+        os.mkdir(template_path)
+        os.mkdir(static_path)
+
+    except FileExistsError:
+        os.remove(path)
+        os.remove(template_path)
+        os.remove(static_path)
+        os.mkdir(path)
+        os.mkdir(template_path)
+        os.mkdir(static_path)
+    
     if os.path.exists("application.zip"):
         os.remove("application.zip")
 
@@ -174,7 +184,7 @@ def generate():
     shutil.rmtree(path)
     f_name = Path('application.zip')
 
-    return send_file(f_name, download_name='application.zip', as_attachment=True)
+    return send_file(f_name, mimetype='application/zip', as_attachment=True, download_name='application.zip')
 
 if __name__ == '__main__':
     app.run()
