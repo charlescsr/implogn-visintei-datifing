@@ -1,9 +1,18 @@
-from flask import Flask, render_template, send_file, request
-from werkzeug.utils import secure_filename
+'''
+Flask application to create a web application based on a pickle file
+
+and a Machine Learning model
+
+Author: Charles Samuel R
+
+Email: rcharles.samuel99@gmail.com
+'''
 import os
 from pathlib import Path
 import zipfile
 import shutil
+from flask import Flask, render_template, send_file, request
+from werkzeug.utils import secure_filename
 import requests
 
 app = Flask(__name__)
@@ -11,7 +20,7 @@ main = os.environ.get('MAIN_PATH')
 TOKEN = os.environ.get('TOKEN')
 
 
-app_start = """ 
+APP_START = """
 from flask import Flask, render_template, request
 import pickle
 import pandas as pd
@@ -24,7 +33,7 @@ pkl_model = open('model.pkl', 'rb')
 model = pickle.load(pkl_model)
 """
 
-app_routes = """
+APP_ROUTES = """
 
 @app.route('/')
 def index():
@@ -61,14 +70,14 @@ def result():
         return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
 """
 
-app_launch = """
+APP_LAUNCH = """
 
 if __name__ == '__main__':
     app.run()
 
 """
 
-base_html = """
+BASE_HTML = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -90,101 +99,122 @@ base_html = """
 </html>
 """
 
-#base_html = base_html.format(ICON, FONT, CSS_ICON_1, CSS_ICON_2, CSS_FILE)
+DIRECTORY = "test_app"
+TEMPLATE_DIR = "test_app/templates"
+STATIC_DIR = "test_app/static"
 
-directory = "test_app"
-template_dir = "test_app/templates"
-static_dir = "test_app/static"
-
-path = os.path.join(main, directory)
-template_path = os.path.join(main, template_dir)
-static_path = os.path.join(main, static_dir)
+path = os.path.join(main, DIRECTORY)
+template_path = os.path.join(main, TEMPLATE_DIR)
+static_path = os.path.join(main, STATIC_DIR)
 
 def generate_code():
+    '''
+        Function to get the pickle file and the static files for the frontend
+    '''
     data = "data.csv"
-    site = "https://model-html-generator.herokuapp.com/create_html_nuvo/"
-    dataset = {"data": open("data.csv", "rb")}
-    r = requests.post(site, files=dataset)
-    if r.status_code == 200:
-        with open('templates.zip', 'wb') as f:
-            f.write(r.content)
-        
-        with zipfile.ZipFile('templates.zip', 'r') as zip_ref:
-            zip_ref.extractall(template_path)
-        os.remove('templates.zip')
-    else:
-        return "Error"
-    
+    site = "https://model-html-generator.herokuapp.com/create_html/"
+    with open("data.csv", "rb") as data_file:
+        dataset = {"data": data_file}
+        template_request = requests.post(site, files=dataset)
+        if template_request.status_code == 200:
+            with open('templates.zip', 'wb') as template_zip:
+                template_zip.write(template_request.content)
+
+            with zipfile.ZipFile('templates.zip', 'r') as zip_ref:
+                zip_ref.extractall(template_path)
+            os.remove('templates.zip')
+        else:
+            return "Error"
+
+    data_file.close()
+
     shutil.move(data, static_path)
 
     site = "https://model-html-generator.herokuapp.com/get-static/"+str(TOKEN)
-    r = requests.post(site)
-    if r.status_code == 200:
-        with open("static.zip", 'wb') as f:
-            f.write(r.content)
+    static_request = requests.post(site)
+    if static_request.status_code == 200:
+        with open("static.zip", 'wb') as static_file:
+            static_file.write(static_request.content)
 
         with zipfile.ZipFile('static.zip', 'r') as zip_ref:
             zip_ref.extractall(static_path)
-        
-        os.remove('static.zip')        
 
-    f = open(os.path.join(path, 'app.py'), 'w')
-    app_file = app_start + "\n" + app_routes + "\n" + app_launch
-    f.write(app_file)
-    f.close()
+    os.remove('static.zip')
+
+    with open(os.path.join(path, 'app.py'), 'w') as app_py:
+        app_file = APP_START + "\n" + APP_ROUTES + "\n" + APP_LAUNCH
+        app_py.write(app_file)
+
+    app_py.close()
+
     shutil.copyfile('Pipfile', os.path.join(path+"/Pipfile"))
     shutil.copyfile('Pipfile.lock', os.path.join(path+"/Pipfile.lock"))
-    #shutil.copyfile('Procfile', os.path.join(path+"/Procfile"))
 
 
 @app.route('/')
 def index():
+    '''
+        Function to render the home page
+    '''
     return render_template("index.html")
 
 @app.route('/create')
 def create():
+    '''
+        Function to render the main HTML page to upload the pickle file and select
+        the model to be used.
+    '''
     return render_template("create.html")
 
 @app.route('/generate', methods=["POST"])
 def generate():
+    '''
+        Function to generate the code based on the pickle file and model selected
+    '''
     try:
         os.mkdir(path)
         os.mkdir(template_path)
         os.mkdir(static_path)
 
-    except FileExistsError:
-        os.remove(path)
-        os.remove(template_path)
-        os.remove(static_path)
+    except (FileExistsError, IsADirectoryError):
+        shutil.rmtree(path)
         os.mkdir(path)
         os.mkdir(template_path)
         os.mkdir(static_path)
-    
+
     if os.path.exists("application.zip"):
         os.remove("application.zip")
 
-    m = request.form['model']
+    ml_model = request.form['model']
     site = "https://model-html-generator.herokuapp.com/model_set/"
     file = request.files['dataset']
     file.save(secure_filename("data.csv"))
-    dataset = {"data": open("data.csv", "rb")}
-    r = requests.post(site + m, files=dataset)
-    if r.status_code == 200:
-        with open('model.pkl', 'wb') as f:
-            f.write(r.content)
-        shutil.move('model.pkl', path)
-    else:
-        return "Error"
+    with open("data.csv", "rb") as data_file:
+        dataset = {"data": data_file}
+        pkl_request = requests.post(site + ml_model, files=dataset)
+        if pkl_request.status_code == 200:
+            with open('model.pkl', 'wb') as pkl_file:
+                pkl_file.write(pkl_request.content)
+            shutil.move('model.pkl', path)
+        else:
+            os.remove(path)
+            os.remove(template_path)
+            os.remove(static_path)
+            return "Error"
 
-    f = open(os.path.join(template_path, 'base.html'), 'w')
-    f.write(base_html)
-    f.close()
+    data_file.close()
+
+    with open(os.path.join(template_path, 'base.html'), 'w') as base_html_file:
+        base_html_file.write(BASE_HTML)
+
+    base_html_file.close()
     generate_code()
     shutil.make_archive('application', 'zip', 'test_app')
     shutil.rmtree(path)
-    f_name = Path('application.zip')
+    zip_name = Path('application.zip')
 
-    return send_file(f_name, mimetype='application/zip', as_attachment=True, download_name='application.zip')
+    return send_file(zip_name, mimetype='application/zip',
+        as_attachment=True, download_name='application.zip')
 
 if __name__ == '__main__':
     app.run()
