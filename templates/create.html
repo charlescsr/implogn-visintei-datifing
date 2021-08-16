@@ -28,7 +28,7 @@
             <div class="container">
                 <div class="block-heading">
                     <h2 class="text-info">Create Application</h2>
-                    <p>Upload your dataset (CSV) and what you want done on the dataset</p>
+                    <p>Upload your dataset (CSV) and select the model and this will take care of the rest</p>
                 </div>
                 <form action="{{url_for('generate')}}" method="POST", enctype="multipart/form-data">
                     <div class="mb-3"><label class="form-label" for="dataset">File</label><br><input type="file" accept=".csv" id="dataset" name="dataset"></div>

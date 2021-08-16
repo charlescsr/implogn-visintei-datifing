@@ -10,7 +10,6 @@ requests = "*"
 pandas = "*"
 sklearn = "*"
 gunicorn = "*"
-colorama = "*"
 pylint = "*"
 
 [dev-packages]
