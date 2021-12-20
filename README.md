@@ -20,7 +20,7 @@ Simply put, this is a Flask application that utilises FastAPI to create a Flask 
 
 To set up this project, you require the following:
 
-* Python (Preferably 3.8.x)
+* Python (Preferably >=3.8)
 * Pipenv
   * Can be installed with ```python -m pip install pipenv```
 
