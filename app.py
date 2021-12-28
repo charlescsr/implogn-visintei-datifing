@@ -112,6 +112,8 @@ def generate_code():
         Function to get the pickle file and the static files for the frontend
     '''
     data = "data.csv"
+    # Local variable for testing
+    # site = "http://127.0.0.1:8000/create_html/"
     site = "https://model-html-generator.herokuapp.com/create_html/"
     with open("data.csv", "rb") as data_file:
         dataset = {"data": data_file}
@@ -130,6 +132,8 @@ def generate_code():
 
     shutil.move(data, static_path)
 
+    # Local variable for testing
+    # site = "http://127.0.0.1:8000/get-static/"+str(TOKEN)
     site = "https://model-html-generator.herokuapp.com/get-static/"+str(TOKEN)
     static_request = requests.post(site)
     if static_request.status_code == 200:
@@ -186,6 +190,8 @@ def generate():
         os.remove("application.zip")
 
     ml_model = request.form['model']
+    # Local variable for testing
+    # site = "http://127.0.0.1:8000/model_set/"
     site = "https://model-html-generator.herokuapp.com/model_set/"
     file = request.files['dataset']
     file.save(secure_filename("data.csv"))
@@ -197,9 +203,7 @@ def generate():
                 pkl_file.write(pkl_request.content)
             shutil.move('model.pkl', path)
         else:
-            os.remove(path)
-            os.remove(template_path)
-            os.remove(static_path)
+            shutil.rmtree(path)
             return "Error"
 
     data_file.close()
