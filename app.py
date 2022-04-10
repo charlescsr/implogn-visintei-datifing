@@ -64,7 +64,7 @@ def result():
         acc = 100-random.uniform(1, 10)
         return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
     else:
-        feats = arr.reshape((1, len(X.columns)))
+        feats = arr.reshape(1, -1)
         ans = model.predict(feats)
         acc = 100-random.uniform(1, 10)
         return render_template('result.html', answer=ans[0], acc='{:.2f}'.format(acc))
